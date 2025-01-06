@@ -4,18 +4,20 @@ import com.example.exception.PlaneException;
 import com.example.model.Plane;
 
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class PlaneRepositoryImpl implements PlaneRepository {
-    HashMap<Integer, Plane> planes = new HashMap<>(); // planeNumber , plane
+    HashMap<Integer, Plane> planes; // routeNumber , plane
 
-    public PlaneRepositoryImpl() {}
+    public PlaneRepositoryImpl() {
+        planes = new HashMap<>();
+    }
 
     @Override
     public void cancelPlane(Integer planeRoute, Integer day) {
         if(planes.containsKey(planeRoute)){
-            Plane plane = planes.get(planeRoute);
-            plane.removePlane(day);
-            planes.replace(planeRoute,plane);
+            planes.remove(planeRoute);
             return;
         }
         throw new PlaneException("Route does not exist");
@@ -23,25 +25,41 @@ public class PlaneRepositoryImpl implements PlaneRepository {
 
     @Override
     public void addPlane(Integer planeRoute, Integer day, Integer passengerAmount) {
+        if(!planes.containsKey(planeRoute)){
+            Plane plane = new Plane(day, passengerAmount, planeRoute);
+            planes.put(planeRoute, plane);
+            return;
+        }
+        throw new PlaneException("Plane already exists");
+    }
+
+    @Override
+    public void changePassengerAmountAndDay(Integer planeRoute, Integer day, Integer passengerAmount) {
         if(planes.containsKey(planeRoute)){
             Plane plane = planes.get(planeRoute);
-            plane.addPlane(day, passengerAmount);
+            plane.changeMaxPassengersAndDay(passengerAmount,day);
             planes.replace(planeRoute, plane);
+            return;
         }
         throw new PlaneException("Route does not exist");
     }
 
     @Override
     public Integer getAvailableSpace(Integer firstRoute, Integer lastRoute, Integer toDay) {
+        // todo: zmodyfikować tak aby zaliczało historię modyfikacji daneego samolotu, w przypadku usunięcia samolotu hisotria jest kasowana
+        /*return IntStream.range(firstRoute - 1, lastRoute)
+                .mapToObj(i -> planes.get(i))
+                .filter(Objects::nonNull)
+                .mapToInt(plane -> plane.getAvailableSpace(toDay))
+                .sum();*/
         Integer availableSpace = 0;
-        for (int i=firstRoute;i<=lastRoute;i++){
-            if(!planes.containsKey(i)){
+        for (int i=firstRoute-1;i<lastRoute;i++){
+            if(planes.get(i) == null){
                 continue;
             }
-            for (int j=1;j<=toDay;j++){
-                availableSpace += planes.get(i).getAvailableSpace(j);
-            }
+            availableSpace += planes.get(i).getAvailableSpace(toDay);
         }
+
         return availableSpace;
     }
 }

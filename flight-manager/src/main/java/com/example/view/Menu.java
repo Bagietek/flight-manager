@@ -40,6 +40,6 @@ public class Menu {
             }
             break;
         }
-        System.out.println(instructionController.inputRead(inputLines));
+        System.out.println(instructionController.instructionHandler(inputLines));
     }
 }
