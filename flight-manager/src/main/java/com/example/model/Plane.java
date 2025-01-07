@@ -1,10 +1,8 @@
 package com.example.model;
 
-import com.example.exception.PlaneException;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Plane {
 
@@ -41,9 +39,24 @@ public class Plane {
         if (result <= 0) {
             return 0;
         }
+        result *= maxPassengers;
         if (planeHistory == null) {
-            return result * maxPassengers;
+            return result;
         }
-        return result * maxPassengers + planeHistory.getAvailableHistoricSpace(day, this.day);
+        AtomicReference<Integer> currentPlaneDay = new AtomicReference<>(this.day);
+        result += planeHistory.history.stream()
+                .sorted((p1, p2) -> Integer.compare(p2.day, p1.day))
+                .filter(plane -> currentPlaneDay.get() <= day)
+                .mapToInt(plane -> {
+                    Integer availableSpace = getAvailableSpace(plane.day, currentPlaneDay.get(), plane.maxPassengers);
+                    currentPlaneDay.set(plane.day);
+                    return availableSpace;
+                })
+                .sum();
+        return result;
+    }
+
+    private Integer getAvailableSpace(Integer startingDay, Integer endingDay, Integer maxPassengers){
+        return maxPassengers * (endingDay - startingDay);
     }
 }
