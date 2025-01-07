@@ -46,20 +46,15 @@ public class PlaneRepositoryImpl implements PlaneRepository {
 
     @Override
     public Integer getAvailableSpace(Integer firstRoute, Integer lastRoute, Integer toDay) {
-        // todo: zmodyfikować tak aby zaliczało historię modyfikacji daneego samolotu, w przypadku usunięcia samolotu hisotria jest kasowana
-        /*return IntStream.range(firstRoute - 1, lastRoute)
+        return IntStream.range(firstRoute - 1, lastRoute)
                 .mapToObj(i -> planes.get(i))
                 .filter(Objects::nonNull)
                 .mapToInt(plane -> plane.getAvailableSpace(toDay))
-                .sum();*/
-        Integer availableSpace = 0;
-        for (int i=firstRoute-1;i<lastRoute;i++){
-            if(planes.get(i) == null){
-                continue;
-            }
-            availableSpace += planes.get(i).getAvailableSpace(toDay);
-        }
+                .sum();
+    }
 
-        return availableSpace;
+    @Override
+    public Plane getPlane(Integer planeRoute){
+        return planes.get(planeRoute);
     }
 }

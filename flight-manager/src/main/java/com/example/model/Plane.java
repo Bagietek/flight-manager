@@ -10,7 +10,9 @@ public class Plane {
 
     @Getter
     Integer planeRoute;
+    @Getter
     Integer maxPassengers;
+    @Getter
     Integer day;
     PlaneHistory planeHistory;
 
@@ -21,41 +23,27 @@ public class Plane {
         planeHistory = new PlaneHistory();
     }
 
-    private Plane(Plane other){
+    private Plane(Plane other) {
         this.planeRoute = other.planeRoute;
         this.day = other.day;
         this.maxPassengers = other.maxPassengers;
         planeHistory = null;
     }
 
-    public void changeMaxPassengersAndDay(Integer maxPassengers, Integer day){
+    public void changeMaxPassengersAndDay(Integer maxPassengers, Integer day) {
         planeHistory.addHistory(new Plane(this));
         this.day = day;
         this.maxPassengers = maxPassengers;
     }
 
-    public Integer getAvailableSpace(Integer day){
+    public Integer getAvailableSpace(Integer day) {
         Integer result = day - this.day;
-        if(result <= 0 ){
-            return  0;
-        }
-        // todo: debug delete later
-        //Integer historySpace = getAvailableHistoricSpace(day);
-        if(planeHistory == null){
-            return result * maxPassengers;
-        }
-        Integer historySpace = planeHistory.getAvailableHistoricSpace(day,this.day);
-
-        return result * maxPassengers + historySpace;
-    }
-
-    private Integer getAvailableHistoricSpace(Integer day){
-        if(planeHistory == null || planeHistory.getHistory().isEmpty()){
+        if (result <= 0) {
             return 0;
         }
-        return planeHistory.getHistory().stream()
-                .mapToInt(p -> p.getAvailableSpace(day - 1)) // -1, counting that plane is used by the new
-                .sum();
+        if (planeHistory == null) {
+            return result * maxPassengers;
+        }
+        return result * maxPassengers + planeHistory.getAvailableHistoricSpace(day, this.day);
     }
-
 }

@@ -11,10 +11,6 @@ public class PlaneHistory {
         history = new LinkedList<>();
     }
 
-    public LinkedList<Plane> getHistory(){
-        return new LinkedList<>(history);
-    }
-
     public void addHistory(Plane plane){
         history.add(plane);
     }

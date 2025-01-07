@@ -4,9 +4,10 @@ import com.example.repository.PlaneRepository;
 import com.example.repository.PlaneRepositoryImpl;
 
 public class PlaneController {
-    private final PlaneRepository planeRepository = new PlaneRepositoryImpl();
+    private final PlaneRepository planeRepository;
 
-    public PlaneController() {
+    public PlaneController(PlaneRepository planeRepository) {
+        this.planeRepository = planeRepository;
     }
 
     public void addPlane(Integer planeRoute, Integer day, Integer passengerAmount){

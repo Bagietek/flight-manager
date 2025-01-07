@@ -18,6 +18,7 @@ public class InstructionController {
     }
 
     public String instructionHandler(List<String> input){
+        inputCheck(input);
         StringBuilder stringBuilder = new StringBuilder();
         InitialInstruction initialInstruction = new InitialInstruction(input.getFirst(),input.size() - 2);
         input.removeFirst();
@@ -30,6 +31,12 @@ public class InstructionController {
                 .map(this::queryParseAndExecute)
                 .forEach(stringBuilder::append);
         return stringBuilder.toString();
+    }
+
+    private void inputCheck(List<String> input){
+        if(input.size() < 3){
+            throw new InstructionException("Invalid instructions");
+        }
     }
 
     private void initializePlanes(SecondInstruction secondInstruction){
@@ -78,7 +85,7 @@ public class InstructionController {
         try{
             return Integer.parseInt(str);
         }catch (NumberFormatException e){
-            throw new InstructionException("Invalid instruction " + e.getMessage());
+            throw new InstructionException("Invalid instruction\n" + e.getMessage());
         }
     }
 
