@@ -2,17 +2,19 @@ package com.example.model;
 
 import lombok.Getter;
 
-import java.util.concurrent.atomic.AtomicReference;
-
-public class Plane {
+public class Plane implements Comparable<Plane> {
 
     @Getter
-    Integer planeRoute;
+    private final Integer planeRoute;
+
     @Getter
-    Integer maxPassengers;
+    private Integer maxPassengers;
+
     @Getter
-    Integer day;
-    PlaneHistory planeHistory;
+    private Integer day;
+
+    @Getter
+    private final PlaneHistory planeHistory;
 
     public Plane(Integer day, Integer maxPassengers, Integer planeRoute) {
         this.maxPassengers = maxPassengers;
@@ -29,34 +31,17 @@ public class Plane {
     }
 
     public void changeMaxPassengersAndDay(Integer maxPassengers, Integer day) {
-        planeHistory.addHistory(new Plane(this));
+        planeHistory.addToHistory(new Plane(this));
         this.day = day;
         this.maxPassengers = maxPassengers;
     }
 
-    public Integer getAvailableSpace(Integer day) {
-        Integer result = day - this.day;
-        if (result <= 0) {
-            return 0;
-        }
-        result *= maxPassengers;
-        if (planeHistory == null) {
-            return result;
-        }
-        AtomicReference<Integer> currentPlaneDay = new AtomicReference<>(this.day);
-        result += planeHistory.history.stream()
-                .sorted((p1, p2) -> Integer.compare(p2.day, p1.day))
-                .filter(plane -> currentPlaneDay.get() <= day)
-                .mapToInt(plane -> {
-                    Integer availableSpace = getAvailableSpace(plane.day, currentPlaneDay.get(), plane.maxPassengers);
-                    currentPlaneDay.set(plane.day);
-                    return availableSpace;
-                })
-                .sum();
-        return result;
+    public Integer getAvailableSpace(Integer startingDay, Integer endingDay, Integer maxPassengers) {
+        return maxPassengers * (endingDay - startingDay);
     }
 
-    private Integer getAvailableSpace(Integer startingDay, Integer endingDay, Integer maxPassengers){
-        return maxPassengers * (endingDay - startingDay);
+    @Override
+    public int compareTo(Plane o) {
+        return Integer.compare( o.getDay(), this.day);
     }
 }

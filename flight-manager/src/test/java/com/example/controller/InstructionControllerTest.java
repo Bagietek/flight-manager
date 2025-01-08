@@ -5,39 +5,39 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class InstructionControllerTest {
-     InstructionController instructionController;
-     PlaneController planeController;
-     @BeforeEach
-     public void getMockedController(){
-         planeController = mock(PlaneController.class);
-         instructionController = new InstructionController(planeController);
-     }
+    InstructionController instructionController;
+    PlaneController planeController;
+
+    @BeforeEach
+    public void getMockedController() {
+        planeController = mock(PlaneController.class);
+        instructionController = new InstructionController(planeController);
+    }
 
     @Test
-    public void unhappyPath_queryParse_shouldThrowInstructionException(){
+    public void unhappyPath_queryParse_shouldThrowInstructionException() {
         // given
-        List<String> input = getInvalidInstructions();
+        final List<String> input = getInvalidInstructions();
         // when && then
         assertThrows(InstructionException.class, () -> instructionController.instructionHandler(input));
     }
 
     @Test
-    public void happyPath_queryParse_shouldReturnAvailableSpace(){
+    public void happyPath_queryParse_shouldReturnAvailableSpace() {
         // given
-        Integer availableSpace = 10;
-        List<String> input = getValidInstructions();
-        when(planeController.getAvailableSpace(1,5,2)).thenReturn(availableSpace);
-        when(planeController.getAvailableSpace(2,3,2)).thenReturn(availableSpace);
-        when(planeController.getAvailableSpace(2,4,4)).thenReturn(availableSpace);
-        when(planeController.getAvailableSpace(1,5,8)).thenReturn(availableSpace);
+        final Integer availableSpace = 10;
+        final List<String> input = getValidInstructions();
+        when(planeController.getAvailableSpace(1, 5, 2)).thenReturn(availableSpace);
+        when(planeController.getAvailableSpace(2, 3, 2)).thenReturn(availableSpace);
+        when(planeController.getAvailableSpace(2, 4, 4)).thenReturn(availableSpace);
+        when(planeController.getAvailableSpace(1, 5, 8)).thenReturn(availableSpace);
         // when
         String output = instructionController.instructionHandler(input);
         // then
@@ -45,45 +45,45 @@ class InstructionControllerTest {
     }
 
     @Test
-    public void happyPath_queryParse_shouldInvokeCancelPlane(){
+    public void happyPath_queryParse_shouldInvokeCancelPlane() {
         // given
-        List<String> input = getValidInstructions();
+        final List<String> input = getValidInstructions();
         // when
         instructionController.instructionHandler(input);
         // then
-        verify(planeController, times(1)).cancelPlane(anyInt(),anyInt());
+        verify(planeController, times(1)).cancelPlane(anyInt(), anyInt());
     }
 
     @Test
-    public void happyPath_queryParse_shouldInvokeAddPlane(){
+    public void happyPath_queryParse_shouldInvokeAddPlane() {
         // given
-        List<String> input = getValidInstructions();
+        final List<String> input = getValidInstructions();
         // when
         instructionController.instructionHandler(input);
         // then
         // planes in command and initialization
-        verify(planeController, times(6)).addPlane(anyInt(),anyInt(),anyInt());
+        verify(planeController, times(6)).addPlane(anyInt(), anyInt(), anyInt());
     }
 
     @Test
-    public void happyPath_queryParse_shouldInvokeChangePassengersAndDay(){
+    public void happyPath_queryParse_shouldInvokeChangePassengersAndDay() {
         // given
-        List<String> input = getValidInstructions();
+        final List<String> input = getValidInstructions();
         // when
         instructionController.instructionHandler(input);
         // then
-        verify(planeController, times(1)).changePassengerAmountAndDay(anyInt(),anyInt(),anyInt());
+        verify(planeController, times(1)).changePassengerAmountAndDay(anyInt(), anyInt(), anyInt());
     }
 
-    private List<String> getInvalidInstructions(){
-         List<String> data = new ArrayList<>();
-         data.add("test");
-         data.add("1 2 3 2 4");
-         data.add("Q 1 5 2");
-         return data;
+    private List<String> getInvalidInstructions() {
+        List<String> data = new ArrayList<>();
+        data.add("test");
+        data.add("1 2 3 2 4");
+        data.add("Q 1 5 2");
+        return data;
     }
 
-    private List<String> getValidInstructions(){
+    private List<String> getValidInstructions() {
         List<String> data = new ArrayList<>();
         data.add("5 7");
         data.add("1 2 3 2 4");
@@ -101,6 +101,6 @@ class InstructionControllerTest {
         String correctOutput = availableSpace + "\n";
         correctOutput += correctOutput;
         correctOutput += correctOutput;
-        assertEquals(output,correctOutput);
+        assertEquals(output, correctOutput);
     }
 }

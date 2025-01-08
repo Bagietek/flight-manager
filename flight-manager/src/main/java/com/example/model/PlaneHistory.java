@@ -6,12 +6,13 @@ import java.util.LinkedList;
 
 public class PlaneHistory {
     @Getter
-    LinkedList<Plane> history;
+    private final LinkedList<Plane> history;
+
     public PlaneHistory() {
         history = new LinkedList<>();
     }
 
-    public void addHistory(Plane plane){
+    public void addToHistory(Plane plane) {
         history.add(plane);
     }
 }
